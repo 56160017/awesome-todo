@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">816296481667-aftvqch6iqjpuhuuggvmvc118f1h81d0.apps.googleusercontent.com</string>
+    <string name="firebase_database_url" translatable="false">https://flutterpark.firebaseio.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">816296481667</string>
+    <string name="google_api_key" translatable="false">AIzaSyBogyl7tzvjRNpkQ_Nxtu-qiexGva35QqI</string>
+    <string name="google_app_id" translatable="false">1:816296481667:android:d7f8cda3b93dc4dd</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBogyl7tzvjRNpkQ_Nxtu-qiexGva35QqI</string>
+    <string name="google_storage_bucket" translatable="false">flutterpark.appspot.com</string>
+    <string name="project_id" translatable="false">flutterpark</string>
+</resources>
