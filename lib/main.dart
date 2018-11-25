@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_homework/detail/add.dart';
 import 'package:flutter_homework/listcard.dart';
@@ -12,15 +13,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
@@ -40,48 +32,60 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Listmodel> lists = List<Listmodel>();
 
-
   @override
   void initState() {
     super.initState();
-    lists.add(Listmodel(title: "ios"));
-    lists.add(Listmodel(title: "web"));
-    lists.add(Listmodel(title: "andoird"));
-    lists.add(Listmodel(title: "backend"));
   }
 
-  void _composeEmail()async{
-    setState(() async {
-     // lists.add(Listmodel(title: "aaaa"));
-      final result = await  Navigator.push(
+  @override
+  Widget build(BuildContext context) {
+    List<Listmodel> todos = null;
+    _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
+      todos = snapshot
+          .map((documentsnapshot) => Listmodel.fromSnapshot(documentsnapshot))
+          .toList();
+      return ListView.builder(
+          itemCount: todos.length,
+          itemBuilder: (BuildContext context, int index) {
+            return GestureDetector(
+              child: Listcard(todos[index]),
+            );
+          });
+    }
+
+    void _composeEmail() async {
+      final String result = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => Add(),
         ),
       );
-      lists.add(Listmodel(title: result));
-    });
-  }
+      setState(() {
+        var data = new Map<String, dynamic>();
+        data['title'] = result;
+        data['isDone'] = false;
+        Firestore.instance.collection('todo').add(data);
 
-  @override
-  Widget build(BuildContext context) {
-    var child = Container(
-      child: ListView.builder(
-          itemCount: lists.length,
-          itemBuilder: (buildContext, position) {
-            return GestureDetector(
-              //onTap: () => _viewEmailDetail(position),
-              child: Listcard(lists[position]),
-            );
-          }),
-    );
+        todos.add(Listmodel(result));
+      });
+    }
+
+    _buildRow(BuildContext context) {
+      Firestore.instance.collection('todo');
+      return StreamBuilder<QuerySnapshot>(
+        stream: Firestore.instance.collection('todo').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return LinearProgressIndicator();
+          return _buildList(context, snapshot.data.documents);
+        },
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title)
-        ,
+        title: Text(widget.title),
       ),
-      body: child,
+      body: _buildRow(context),
       floatingActionButton: FloatingActionButton(
         onPressed: _composeEmail,
         tooltip: 'Compose Email',
